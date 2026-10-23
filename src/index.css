@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root, [data-theme='ocean'] {
+  --bg: 240 247 250; --surface: 255 255 255; --ink: 15 36 49; --muted: 100 125 140;
+  --line: 214 228 236; --brand: 14 116 144; --brand-ink: 255 255 255;
+  --mine: 14 116 144; --mine-ink: 255 255 255;
+}
+[data-theme='sunset'] {
+  --bg: 255 246 238; --surface: 255 255 255; --ink: 58 30 20; --muted: 145 108 92;
+  --line: 244 221 205; --brand: 217 84 38; --brand-ink: 255 255 255;
+  --mine: 217 84 38; --mine-ink: 255 255 255;
+}
+[data-theme='forest'] {
+  --bg: 242 248 240; --surface: 255 255 255; --ink: 24 44 28; --muted: 99 126 102;
+  --line: 215 232 211; --brand: 38 120 62; --brand-ink: 255 255 255;
+  --mine: 38 120 62; --mine-ink: 255 255 255;
+}
+[data-theme='rose'] {
+  --bg: 253 242 246; --surface: 255 255 255; --ink: 60 20 40; --muted: 150 100 125;
+  --line: 246 218 229; --brand: 190 38 96; --brand-ink: 255 255 255;
+  --mine: 190 38 96; --mine-ink: 255 255 255;
+}
+[data-theme='midnight'] {
+  --bg: 13 17 28; --surface: 23 29 44; --ink: 232 237 247; --muted: 140 152 178;
+  --line: 40 49 70; --brand: 129 140 248; --brand-ink: 13 17 28;
+  --mine: 99 102 241; --mine-ink: 255 255 255;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-bg text-ink font-sans antialiased transition-colors duration-300; }
+
+.scroll-thin::-webkit-scrollbar { width: 6px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 9999px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- Public pages (home, login, signup): fixed "printed paper" look, no theme switching ---------- */
+.public-ui {
+  --bg: 250 246 238; --surface: 255 255 255; --ink: 28 43 42; --muted: 96 112 109;
+  --line: 222 213 196; --brand: 15 118 110; --brand-ink: 255 255 255;
+  --mine: 15 118 110; --mine-ink: 255 255 255; --accent: 234 88 12;
+  color: rgb(var(--ink));
+  background-color: rgb(var(--bg));
+  background-image: url('/pattern.svg');
+  background-size: 300px 300px;
+}
+
+@layer components {
+  .print-card {
+    @apply rounded-3xl border-2 bg-surface;
+    border-color: rgb(var(--ink));
+    box-shadow: 6px 6px 0 rgb(var(--ink));
+  }
+  .btn-print {
+    @apply inline-flex items-center justify-center rounded-full border-2 px-6 py-3 font-bold transition-transform;
+    border-color: rgb(var(--ink));
+    box-shadow: 3px 3px 0 rgb(var(--ink));
+  }
+  .btn-print:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgb(var(--ink)); }
+  .btn-print:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgb(var(--ink)); }
+  .sticker {
+    @apply absolute rounded-full border-2 bg-surface px-3 py-1 text-sm font-bold;
+    border-color: rgb(var(--ink));
+    box-shadow: 2px 2px 0 rgb(var(--ink));
+  }
+}

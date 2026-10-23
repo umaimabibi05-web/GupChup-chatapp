@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid;
+
+      // private block list: only the owner can read or write it
+      match /blocks/{other} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    match /usernames/{name} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /phones/{phone} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /chats/{chatId} {
+      // resource == null lets the app check whether a chat exists before creating it
+      allow read: if signedIn() && (resource == null || request.auth.uid in resource.data.members);
+
+      allow create: if signedIn() && request.auth.uid in request.resource.data.members && (
+        (request.resource.data.get('type', 'direct') == 'direct' && request.resource.data.members.size() == 2)
+        || (request.resource.data.type == 'group'
+            && request.resource.data.admins == [request.auth.uid]
+            && request.resource.data.members.size() <= 256)
+      );
+
+      allow update: if signedIn() && request.auth.uid in resource.data.members && (
+        // everyday updates: last message, unread counters, read receipts
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessage', 'updatedAt', 'unread', 'lastRead', 'typing', 'clearedAt', 'hidden'])
+        // group admins: manage members, admins and group info
+        || (resource.data.get('type', 'direct') == 'group'
+            && request.auth.uid in resource.data.admins
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'admins', 'name', 'photoURL', 'description']))
+        // any member can remove only themself (leave group)
+        || (resource.data.get('type', 'direct') == 'group'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'admins'])
+            && request.resource.data.members.size() == resource.data.members.size() - 1
+            && !(request.auth.uid in request.resource.data.members)
+            && resource.data.members.hasAll(request.resource.data.members))
+      );
+
+      allow delete: if signedIn() && resource.data.get('type', 'direct') == 'group'
+                    && request.auth.uid in resource.data.admins;
+
+      match /messages/{msgId} {
+        function isMember() {
+          return request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.members;
+        }
+        allow read: if signedIn() && isMember();
+        allow create: if signedIn() && isMember() && request.resource.data.senderId == request.auth.uid;
+        allow update: if signedIn() && isMember() && (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deletedFor', 'reactions'])
+          || (resource.data.senderId == request.auth.uid
+              && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['text', 'edited', 'deletedForEveryone', 'fileURL', 'fileName', 'fileSize', 'fileType', 'duration']))
+        );
+        allow delete: if false;
+      }
+    }
+
+    match /calls/{callId} {
+      allow read: if signedIn() && (resource.data.callerId == request.auth.uid || resource.data.calleeId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.callerId == request.auth.uid;
+      allow update: if signedIn() && (resource.data.callerId == request.auth.uid || resource.data.calleeId == request.auth.uid);
+
+      match /{sub}/{docId} {
+        allow read, write: if signedIn() && (
+          get(/databases/$(database)/documents/calls/$(callId)).data.callerId == request.auth.uid ||
+          get(/databases/$(database)/documents/calls/$(callId)).data.calleeId == request.auth.uid);
+      }
+    }
+  }
+}
