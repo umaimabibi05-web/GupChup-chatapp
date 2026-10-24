@@ -7,7 +7,7 @@ import { friendlyError } from '../lib/format.js'
 
 const field = 'mt-1 w-full rounded-xl border border-line bg-bg px-4 py-2.5 outline-none focus:border-brand focus:ring-2 focus:ring-brand/30'
 
-export default function NewGroupModal({ me, chats, on, onCreated }) {
+export default function NewGroupModal({ me, chats, onClose, onCreated }) {
   const contactIds = useMemo(
     () => chats.filter((c) => c.type !== 'group').map((c) => c.members.find((id) => id !== me.uid)).filter(Boolean),
     [chats, me.uid]
@@ -67,7 +67,7 @@ export default function NewGroupModal({ me, chats, on, onCreated }) {
   return (
     <div className="fixed inset-0 z-50 grid place-items-end bg-black/50 sm:place-items-center" onClick={onClose}>
       <form onSubmit={create} onClick={(e) => e.stopPropagation()}
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-3xl border border-line bg-surface p-6 shadow-2xl scroll-thin sm:max-w-lg sm:rounded-3xl">
+        className="max-h-[92vh] w-full min-w-0 overflow-y-auto rounded-t-3xl border border-line bg-surface p-6 shadow-2xl scroll-thin sm:max-w-lg sm:rounded-3xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-extrabold">New group</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="rounded-full border border-line px-3 py-1 text-sm">✕</button>

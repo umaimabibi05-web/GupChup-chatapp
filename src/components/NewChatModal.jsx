@@ -30,7 +30,7 @@ export default function NewChatModal({ me, onClose, onStart }) {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-end bg-black/50 sm:place-items-center" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="w-full rounded-t-3xl border border-line bg-surface p-6 shadow-2xl sm:max-w-md sm:rounded-3xl">
+      <div onClick={(e) => e.stopPropagation()} className="w-full min-w-0 rounded-t-3xl border border-line bg-surface p-6 shadow-2xl sm:max-w-md sm:rounded-3xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-extrabold">New chat</h2>
           <button onClick={onClose} aria-label="Close" className="rounded-full border border-line px-3 py-1 text-sm">✕</button>
@@ -50,7 +50,7 @@ export default function NewChatModal({ me, onClose, onStart }) {
               <p className="truncate font-bold">{result.username}</p>
               <p className="truncate text-xs text-muted">{result.about}</p>
             </div>
-            <button onClick={() => onStart(result.uid)} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-brand-ink">Chat</button>
+            <button onClick={() => onStart(result.uid)} className="shrink-0 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-brand-ink">Chat</button>
           </div>
         )}
       </div>

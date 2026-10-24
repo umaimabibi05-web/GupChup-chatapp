@@ -84,7 +84,7 @@ export default function GroupInfoModal({ chat, me, onClose }) {
   return (
     <div className="fixed inset-0 z-50 grid place-items-end bg-black/50 sm:place-items-center" onClick={onClose}>
       <div role="dialog" aria-label="Group info" onClick={(e) => e.stopPropagation()}
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-3xl border border-line bg-surface p-6 shadow-2xl scroll-thin sm:max-w-lg sm:rounded-3xl">
+        className="max-h-[92vh] w-full min-w-0 overflow-y-auto rounded-t-3xl border border-line bg-surface p-6 shadow-2xl scroll-thin sm:max-w-lg sm:rounded-3xl">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-extrabold">Group info</h2>
           <button onClick={onClose} aria-label="Close" className="rounded-full border border-line px-3 py-1 text-sm">✕</button>
